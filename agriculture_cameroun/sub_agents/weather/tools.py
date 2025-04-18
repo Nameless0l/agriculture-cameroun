@@ -16,8 +16,8 @@ model = genai.GenerativeModel('gemini-2.0-flash-001')
 
 def get_weather_forecast(
     region: str,
-    days: int = 7,
     tool_context: ToolContext,
+    days: int = 7,
 ) -> Dict[str, Any]:
     """Obtient les prévisions météo pour une région.
     
@@ -172,8 +172,8 @@ def get_climate_alerts(
 
 def analyze_rainfall_patterns(
     region: str,
-    period_months: int = 6,
     tool_context: ToolContext,
+    period_months: int = 6,
 ) -> Dict[str, Any]:
     """Analyse les tendances pluviométriques d'une région.
     
