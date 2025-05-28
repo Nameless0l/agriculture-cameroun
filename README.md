@@ -1,45 +1,103 @@
-# Système Multi-Agents pour l'Agriculture Camerounaise
+# 🌱 Agriculture Cameroun - Système Multi-Agents
 
-Un système intelligent multi-agents basé sur l'Agent Development Kit (ADK) de Google, spécialement conçu pour aider les agriculteurs camerounais à optimiser leurs pratiques agricoles.
+[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+[![Poetry](https://img.shields.io/badge/Managed%20by-Poetry-blue.svg)](https://python-poetry.org/)
 
-## 🌱 Vue d'ensemble
+Un système intelligent multi-agents basé sur l'Agent Development Kit (ADK) de Google, spécialement conçu pour révolutionner l'agriculture camerounaise en fournissant des conseils personnalisés et des solutions adaptées aux défis locaux.
 
-Ce système combine l'expertise de plusieurs agents spécialisés pour fournir des conseils agricoles personnalisés :
+## 🎯 Objectif
 
-- **Agent Météo** : Prévisions et conseils climatiques
-- **Agent Cultures** : Calendriers de plantation et techniques culturales
-- **Agent Santé des Plantes** : Diagnostic et traitement des maladies
-- **Agent Économique** : Analyse de marché et rentabilité
-- **Agent Ressources** : Gestion du sol, eau et engrais
+Démocratiser l'accès aux technologies agricoles modernes pour les agriculteurs camerounais, en combinant l'intelligence artificielle avec l'expertise locale pour améliorer les rendements, réduire les pertes et optimiser la rentabilité.
+
+## Fonctionnalités Principales
+
+### 🌤️ Agent Météorologique
+
+- Prévisions météorologiques localisées
+- Alertes climatiques en temps réel
+- Conseils d'adaptation aux conditions météo
+- Calendrier optimal des activités agricoles
+
+### 🌾 Agent Cultures
+
+- Calendriers de plantation personnalisés
+- Techniques culturales adaptées
+- Sélection de variétés résistantes
+- Rotation des cultures et associations
+
+### 🔬 Agent Santé des Plantes
+
+- Diagnostic automatique des maladies
+- Identification des ravageurs
+- Recommandations de traitement bio et chimique
+- Stratégies de prévention
+
+### 💰 Agent Économique
+
+- Analyse des prix de marché
+- Calcul de rentabilité
+- Stratégies de commercialisation
+- Optimisation des coûts de production
+
+### 🌍 Agent Ressources
+
+- Gestion optimale du sol
+- Conseils en irrigation
+- Recommandations d'engrais locaux
+- Techniques de conservation
+
+## 🚀 Guide d'Installation
 
 ## 🚀 Installation
 
-### Prérequis
+### ⚡ Installation Express (5 minutes)
 
-- Python 3.12 ou supérieur
-- Poetry pour la gestion des dépendances
-- Clé API Google Gemini
+```bash
+# Installation automatique (Linux/macOS)
+curl -sSL https://raw.githubusercontent.com/Nameless0l/agriculture-cameroun/main/setup.sh | bash
+
+# Ou sur Windows (PowerShell Admin)
+iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Nameless0l/agriculture-cameroun/main/setup.ps1'))
+```
+
+### 📚 Guides Détaillés
+
+- **[🚀 Démarrage Rapide](QUICKSTART.md)** - Commencer en 5 minutes
+- **[📦 Installation Complète](INSTALLATION.md)** - Guide détaillé pas à pas
+- **[⚙️ Configuration Avancée](docs/configuration.md)** - Personnalisation
+
+### Prérequis Système
+
+- **Python** : Version 3.12 ou supérieure
+- **Poetry** : Gestionnaire de dépendances moderne
+- **Git** : Pour le contrôle de version
+- **Clé API Google Gemini** : Pour l'intelligence artificielle
 
 ### Configuration
 
 1. **Cloner le projet**
+
 ```bash
-git clone <repository-url>
-cd agriculture-cameroun
+git clone https://github.com/Nameless0l/agriculture-cameroun.git agriculture
+cd agriculture
 ```
 
 2. **Installer les dépendances**
+
 ```bash
 poetry install
 ```
 
 3. **Configurer les variables d'environnement**
+
 ```bash
 cp .env.example .env
 # Éditer le fichier .env avec vos clés API
 ```
 
 4. **Variables d'environnement requises**
+
 ```bash
 # Obligatoire
 GEMINI_API_KEY=your_gemini_api_key_here
@@ -80,7 +138,6 @@ adk run .
 ```
 agriculture/
 ├── agent.py              # Agent principal coordinateur
-├── config.py             # Configuration et modèles de données
 ├── prompts.py            # Instructions pour l'agent principal
 ├── tools.py              # Outils de communication inter-agents
 ├── sub_agents/           # Agents spécialisés
@@ -88,7 +145,8 @@ agriculture/
 │   ├── crops/            # Agent de gestion des cultures
 │   ├── health/           # Agent santé des plantes
 │   ├── economic/         # Agent économique
-│   └── resources/        # Agent de gestion des ressources
+    ├── resources/              # Configuration et modèles de données
+│   └──        # Agent de gestion des ressources
 └── utils/
     ├── data.py           # Données agricoles camerounaises
     └── utils.py          # Fonctions utilitaires
@@ -99,16 +157,19 @@ agriculture/
 Le système intègre des données spécifiques au Cameroun :
 
 ### Régions supportées
+
 - Centre, Littoral, Ouest, Sud, Est
 - Nord, Adamaoua, Extrême-Nord
 - Nord-Ouest, Sud-Ouest
 
 ### Cultures principales
+
 - Cacao, Café, Manioc, Maïs
 - Plantain, Arachide, Igname
 - Coton, Palmier à huile
 
 ### Fonctionnalités locales
+
 - Calendriers de plantation par région
 - Prix de marché en FCFA
 - Maladies communes au Cameroun
@@ -118,11 +179,13 @@ Le système intègre des données spécifiques au Cameroun :
 ## 🧪 Tests
 
 Exécuter les tests :
+
 ```bash
 poetry run pytest tests/ -v
 ```
 
 Tests avec couverture :
+
 ```bash
 poetry run pytest tests/ --cov=agriculture --cov-report=html
 ```
@@ -130,6 +193,7 @@ poetry run pytest tests/ --cov=agriculture --cov-report=html
 ## 📊 Évaluation
 
 Le système inclut des tests d'évaluation :
+
 ```bash
 adk eval . eval/agriculture_eval_set.json
 ```
@@ -152,6 +216,7 @@ response = requests.post("http://localhost:8000/chat", json={
 ### Personnalisation des modèles
 
 Modifier les modèles utilisés dans `.env` :
+
 ```bash
 ROOT_AGENT_MODEL=gemini-2.0-flash-001
 WEATHER_AGENT_MODEL=gemini-2.0-flash-001
@@ -231,19 +296,23 @@ Quand planter, quel budget prévoir, et comment préparer le sol ?
 ## 🌟 Fonctionnalités Avancées
 
 ### Multi-Agent Orchestration
+
 Le système coordonne automatiquement les agents pour des réponses complètes :
+
 - Analyse contextuelle intelligente
 - Synthèse des recommandations multi-sources
 - Gestion des contradictions entre agents
 - Priorisation des conseils selon l'urgence
 
 ### Adaptation Culturelle
+
 - Intégration des pratiques traditionnelles efficaces
 - Respect des contraintes économiques locales
 - Prise en compte des ressources disponibles
 - Conseils adaptés aux petites exploitations
 
 ### Intelligence Économique
+
 - Analyse temps réel des prix de marché
 - Calculs de rentabilité personnalisés
 - Identification d'opportunités commerciales
