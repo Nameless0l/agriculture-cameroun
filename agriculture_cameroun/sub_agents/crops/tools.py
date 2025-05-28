@@ -3,7 +3,7 @@
 """Outils pour l'agent de gestion des cultures."""
 
 import os
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import google.generativeai as genai
 from google.adk.tools import ToolContext
 
@@ -61,8 +61,8 @@ def get_planting_calendar(
 def get_crop_rotation_advice(
     current_crop: str,
     soil_type: str,
-    field_history: List[str] = None,
     tool_context: ToolContext,
+    field_history: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """Recommande un plan de rotation des cultures.
     
@@ -106,8 +106,8 @@ def get_crop_rotation_advice(
 def get_variety_recommendations(
     crop: str,
     region: str,
-    priorities: List[str] = None,
     tool_context: ToolContext,
+    priorities: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """Recommande les meilleures variétés pour une culture.
     
@@ -153,9 +153,9 @@ def get_variety_recommendations(
 
 def get_cultivation_techniques(
     crop: str,
-    farming_system: str = "Traditionnel",
-    constraints: List[str] = None,
     tool_context: ToolContext,
+    farming_system: str = "Traditionnel",
+    constraints: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """Fournit des techniques de culture adaptées.
     

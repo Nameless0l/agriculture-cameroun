@@ -4,6 +4,7 @@
 
 from google.adk.tools import ToolContext
 from google.adk.tools.agent_tool import AgentTool
+from typing import Optional
 
 from .sub_agents import (
     weather_agent,
@@ -16,8 +17,8 @@ from .sub_agents import (
 
 async def call_weather_agent(
     question: str,
-    region: str = None,
     tool_context: ToolContext,
+    region: Optional[str] = None,
 ):
     """Appelle l'agent météo pour les questions climatiques.
     
@@ -50,9 +51,9 @@ async def call_weather_agent(
 
 async def call_crops_agent(
     question: str,
-    crop: str = None,
-    region: str = None,
     tool_context: ToolContext,
+    crop: Optional[str] = None,
+    region: Optional[str] = None,
 ):
     """Appelle l'agent cultures pour les questions de plantation et récolte.
     
@@ -87,9 +88,9 @@ async def call_crops_agent(
 
 async def call_health_agent(
     question: str,
-    symptoms: str = None,
-    crop: str = None,
     tool_context: ToolContext,
+    symptoms: Optional[str] = None,
+    crop: Optional[str] = None,
 ):
     """Appelle l'agent santé des plantes pour diagnostics et traitements.
     
@@ -121,9 +122,9 @@ async def call_health_agent(
 
 async def call_economic_agent(
     question: str,
-    crop: str = None,
-    quantity: float = None,
     tool_context: ToolContext,
+    crop: Optional[str] = None,
+    quantity: Optional[float] = None,
 ):
     """Appelle l'agent économique pour analyses de marché et rentabilité.
     
@@ -155,9 +156,9 @@ async def call_economic_agent(
 
 async def call_resources_agent(
     question: str,
-    resource_type: str = None,
-    crop: str = None,
     tool_context: ToolContext,
+    resource_type: Optional[str] = None,
+    crop: Optional[str] = None,
 ):
     """Appelle l'agent ressources pour gestion sol, eau et engrais.
     
