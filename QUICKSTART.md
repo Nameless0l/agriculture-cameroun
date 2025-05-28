@@ -13,7 +13,7 @@ Ce guide vous permet de démarrer rapidement avec le système Agriculture Camero
 
 ```bash
 # Cloner et installer d'un coup
-git clone https://github.com/votre-organisation/agriculture-cameroun.git
+git clone https://github.com/Nameless0l/agriculture-cameroun.git
 cd agriculture-cameroun
 pip install poetry
 poetry install
