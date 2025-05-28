@@ -6,6 +6,13 @@
 
 Un système intelligent multi-agents basé sur l'Agent Development Kit (ADK) de Google, spécialement conçu pour révolutionner l'agriculture camerounaise en fournissant des conseils personnalisés et des solutions adaptées aux défis locaux.
 
+## 👨‍💻 Auteur
+
+**Mbassi Loic Aron**
+- 📧 Email: [wwwmbassiloic@gmail.com](mailto:wwwmbassiloic@gmail.com)
+- 🌐 Portfolio: [mbassiloic.tech](http://mbassiloic.tech/)
+- 🐙 GitHub: [@Nameless0l](https://github.com/Nameless0l)
+
 ## 🎯 Objectif
 
 Démocratiser l'accès aux technologies agricoles modernes pour les agriculteurs camerounais, en combinant l'intelligence artificielle avec l'expertise locale pour améliorer les rendements, réduire les pertes et optimiser la rentabilité.
@@ -205,7 +212,7 @@ Le système peut être utilisé via API REST :
 ```python
 import requests
 
-response = requests.post("http://localhost:8000/chat", json={
+response = requests.post("http://localhost:8000/", json={
     "message": "Comment traiter la pourriture brune du cacao ?",
     "session_id": "unique_session_id"
 })
