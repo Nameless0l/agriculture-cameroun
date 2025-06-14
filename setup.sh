@@ -278,7 +278,7 @@ show_final_instructions() {
     echo "- Démarrage rapide: QUICKSTART.md"
     echo ""
     echo "🆘 Support:"
-    echo "- GitHub Issues: https://github.com/votre-organisation/agriculture-cameroun/issues"
+    echo "- GitHub Issues: https://github.com/Nameless0l/agriculture-cameroun/issues"
     echo "- Email: team@agriculture-cm.com"
     echo ""
     print_success "Bon agriculture avec l'IA ! 🌱"

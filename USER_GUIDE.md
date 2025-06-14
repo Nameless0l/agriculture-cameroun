@@ -2,7 +2,7 @@
 
 ## Table des matières
 
-1. [Vue d'ensemble](#vue-densemble)
+1. [Vue d&#39;ensemble](#vue-densemble)
 2. [Configuration initiale](#configuration-initiale)
 3. [Utilisation des agents](#utilisation-des-agents)
 4. [Types de consultations](#types-de-consultations)
@@ -46,22 +46,7 @@ DEFAULT_REGION=Centre
 DEFAULT_LANGUAGE=fr
 ```
 
-#### Configuration avancée
 
-```env
-# Modèles IA
-PRIMARY_MODEL=gemini-1.5-pro
-FALLBACK_MODEL=gemini-1.5-flash
-MAX_TOKENS=8192
-
-# Base de données (optionnel)
-DATABASE_URL=sqlite:///./agriculture.db
-ENABLE_CACHING=true
-
-# Monitoring (production)
-LOG_LEVEL=INFO
-ENABLE_METRICS=true
-```
 
 ### 2. Test de la configuration
 
@@ -106,12 +91,14 @@ python -m agriculture_cameroun.sub_agents.crops.agent --crop=maïs --region=Cent
 ### 1. Consultations météorologiques
 
 **Questions supportées :**
+
 - Prévisions météorologiques
 - Alertes climatiques
 - Conseils d'irrigation
 - Optimisation des périodes de plantation
 
 **Exemples :**
+
 ```
 🌤️ "Quel temps fera-t-il cette semaine à Yaoundé ?"
 🌤️ "Y a-t-il des risques de sécheresse ce mois-ci ?"
@@ -121,12 +108,14 @@ python -m agriculture_cameroun.sub_agents.crops.agent --crop=maïs --region=Cent
 ### 2. Consultations sur les cultures
 
 **Questions supportées :**
+
 - Sélection de variétés
 - Calendriers de plantation
 - Techniques de culture
 - Optimisation des rendements
 
 **Exemples :**
+
 ```
 🌱 "Quelle variété de manioc est adaptée au sol argileux ?"
 🌱 "Comment améliorer le rendement de mes cacaoyers ?"
@@ -136,12 +125,14 @@ python -m agriculture_cameroun.sub_agents.crops.agent --crop=maïs --region=Cent
 ### 3. Consultations de santé des plantes
 
 **Questions supportées :**
+
 - Diagnostic de maladies
 - Identification de parasites
 - Traitements recommandés
 - Prévention
 
 **Exemples :**
+
 ```
 🏥 "Mes feuilles de café jaunissent, que faire ?"
 🏥 "Comment traiter la pourriture brune du cacao ?"
@@ -151,12 +142,14 @@ python -m agriculture_cameroun.sub_agents.crops.agent --crop=maïs --region=Cent
 ### 4. Consultations économiques
 
 **Questions supportées :**
+
 - Analyse des prix de marché
 - Optimisation des revenus
 - Calcul de rentabilité
 - Stratégies de commercialisation
 
 **Exemples :**
+
 ```
 💰 "Quel est le prix actuel du café arabica ?"
 💰 "Comment calculer la rentabilité de ma plantation ?"
@@ -166,12 +159,14 @@ python -m agriculture_cameroun.sub_agents.crops.agent --crop=maïs --region=Cent
 ### 5. Accès aux ressources
 
 **Questions supportées :**
+
 - Formations disponibles
 - Subventions et aides
 - Contacts d'experts
 - Documentation technique
 
 **Exemples :**
+
 ```
 📚 "Où trouver des formations sur l'agriculture biologique ?"
 📚 "Quelles sont les aides disponibles pour les jeunes agriculteurs ?"
@@ -188,6 +183,7 @@ python -m agriculture_cameroun.agent --query "Je suis nouveau dans l'agriculture
 ```
 
 **Réponse attendue :**
+
 - Recommandations de cultures adaptées
 - Calendrier de plantation
 - Prévisions météorologiques
@@ -202,6 +198,7 @@ python -m agriculture_cameroun.sub_agents.health.agent --symptoms "feuilles jaun
 ```
 
 **Processus :**
+
 1. Analyse des symptômes
 2. Diagnostic probable
 3. Traitements recommandés
@@ -216,6 +213,7 @@ python -m agriculture_cameroun.sub_agents.economic.agent --analysis "rentabilit�
 ```
 
 **Éléments fournis :**
+
 - Coûts de production
 - Revenus estimés
 - Seuil de rentabilité
@@ -232,6 +230,7 @@ Erreur : Invalid API key
 ```
 
 **Solutions :**
+
 - Vérifier la clé dans le fichier `.env`
 - S'assurer que la clé est valide et active
 - Vérifier les quotas de l'API
@@ -243,6 +242,7 @@ Erreur : Connection timeout
 ```
 
 **Solutions :**
+
 - Vérifier la connexion internet
 - Configurer le proxy si nécessaire
 - Utiliser le mode hors ligne (limité)
@@ -254,6 +254,7 @@ L'agent donne des réponses inappropriées
 ```
 
 **Solutions :**
+
 - Reformuler la question plus précisément
 - Spécifier la région et le contexte
 - Utiliser l'agent spécialisé directement
@@ -284,18 +285,9 @@ cp .env.example .env
 poetry install --sync
 ```
 
-## Conseils avancés
-
-### 1. Optimisation des performances
-
-**Cache intelligent :**
-```env
-ENABLE_CACHING=true
-CACHE_DURATION=3600  # 1 heure
-CACHE_SIZE_LIMIT=100MB
-```
 
 **Requêtes groupées :**
+
 ```bash
 # Traiter plusieurs questions en lot
 python -m agriculture_cameroun.agent --batch questions.txt
@@ -304,6 +296,7 @@ python -m agriculture_cameroun.agent --batch questions.txt
 ### 2. Personnalisation
 
 **Profil agriculteur :**
+
 ```env
 FARMER_PROFILE=small_scale  # small_scale, medium_scale, large_scale
 DEFAULT_CROPS=maïs,manioc,plantain
@@ -311,57 +304,22 @@ EXPERIENCE_LEVEL=beginner   # beginner, intermediate, expert
 ```
 
 **Préférences linguistiques :**
+
 ```env
 DEFAULT_LANGUAGE=fr
 ENABLE_LOCAL_DIALECTS=true
 DIALECT_PREFERENCE=ewondo
 ```
 
-### 3. Intégration avec d'autres outils
 
-**Export des données :**
-```bash
-# Export des conseils en PDF
-python -m agriculture_cameroun.export --format pdf --output conseils.pdf
 
-# Export vers Excel
-python -m agriculture_cameroun.export --format xlsx --output analyse.xlsx
-```
 
-**Notifications automatiques :**
-```env
-ENABLE_SMS_ALERTS=true
-PHONE_NUMBER=+237xxxxxxxxx
-ALERT_TYPES=weather,disease,price
-```
 
-### 4. Utilisation hors ligne
-
-```bash
-# Télécharger les données locales
-python -m agriculture_cameroun.sync --download-offline-data
-
-# Mode hors ligne
-python -m agriculture_cameroun.agent --offline --query "votre question"
-```
-
-### 5. Contribution aux données
-
-```bash
-# Signaler une information incorrecte
-python -m agriculture_cameroun.feedback --report "description du problème"
-
-# Partager une observation locale
-python -m agriculture_cameroun.contribute --observation "données terrain"
-```
 
 ## Support et communauté
 
-- **Documentation :** [GitHub Repository](https://github.com/votre-org/agriculture-cameroun)
+- **Documentation :** [GitHub Repository](https://github.com/Nameless0l/agriculture-cameroun)
 - **Issues :** Signalez les bugs sur GitHub Issues
-- **Discussions :** Rejoignez les discussions communautaires
-- **Email :** support@agriculture-cameroun.org
+- **Email :** wwwmbassiloic@gmail.com
 
 ---
-
-*Ce guide est en constante évolution. Consultez la version en ligne pour les dernières mises à jour.*
