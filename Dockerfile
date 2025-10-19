@@ -1,49 +1,42 @@
-# Use Python 3.11 slim image for smaller size
-FROM python:3.11-slim
+FROM python:3.12-slim
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
-
-# Set work directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
+# ── Dépendances système (chromadb nécessite build-essential)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry
-RUN pip install poetry
+# ── UV (remplace poetry/pip, vitesse x10-100 sur install)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+ENV UV_SYSTEM_PYTHON=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
 
-# Configure Poetry: Don't create virtual environment inside container
-ENV POETRY_VENV_IN_PROJECT=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
+# ── Dépendances Python — couche séparée du code applicatif pour le cache Docker
+COPY pyproject.toml .
+RUN uv pip install --no-cache -e "."
 
-# Copy Poetry configuration files
-COPY pyproject.toml poetry.lock* ./
+# ── Code applicatif
+COPY . .
 
-# Install dependencies
-RUN poetry install --only=main --no-root && rm -rf $POETRY_CACHE_DIR
-
-# Copy application code
-COPY agriculture_cameroun/ ./agriculture_cameroun/
-COPY .env.example ./.env
-
-# Create non-root user for security
-RUN adduser --disabled-password --gecos '' appuser && \
-    chown -R appuser:appuser /app
+# ── Utilisateur non-root pour la sécurité
+RUN adduser --disabled-password --gecos "" appuser \
+    && chown -R appuser:appuser /app
 USER appuser
 
-# Expose port
-EXPOSE 8000
+# ── Variables d'environnement (surcharger via docker run -e ou compose)
+ENV PORT=8080 \
+    DEFAULT_REGION=Centre \
+    DEFAULT_LANGUAGE=fr \
+    RAG_PERSIST_DIR=/app/data/chroma
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+EXPOSE 8080
 
-# Default command
-CMD ["poetry", "run", "python", "-m", "agriculture_cameroun.agent", "--server", "--host", "0.0.0.0", "--port", "8000"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD curl -f http://localhost:8080/ready || exit 1
+
+# ── FastAPI via uvicorn (ADK web accessible via adk web dans le dev)
+CMD ["uvicorn", "agriculture_cameroun.api.main:app", \
+     "--host", "0.0.0.0", "--port", "8080", "--workers", "1"]

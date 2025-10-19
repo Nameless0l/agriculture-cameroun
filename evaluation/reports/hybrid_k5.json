@@ -1,0 +1,27 @@
+{
+  "config": {
+    "mode": "hybrid",
+    "top_k": 5,
+    "generation_model": "gemini-2.0-flash-001",
+    "dataset": "evaluation\\golden.jsonl"
+  },
+  "aggregate": {
+    "n_examples": 0,
+    "retrieval": {
+      "hit_rate": 0.0,
+      "context_recall": 0.0,
+      "context_precision": 0.0,
+      "mrr": 0.0
+    },
+    "generation": {
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "semantic_similarity": 0.0
+    },
+    "latency": {
+      "mean_seconds": 0.0,
+      "p95_seconds": 0.0
+    }
+  },
+  "examples": []
+}

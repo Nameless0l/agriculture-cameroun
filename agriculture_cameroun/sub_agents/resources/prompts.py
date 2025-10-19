@@ -19,13 +19,23 @@ def return_instructions_resources() -> str:
     5. **Durabilité**: Pratiques respectueuses de l'environnement
     
     ## Outils disponibles:
-    
+
+    - `retrieve_agricultural_knowledge`: **À utiliser EN PREMIER** pour les
+      questions sur les sols, fertilisation, irrigation. Filtre avec
+      `topic="resources"` et cite les sources.
     - `analyze_soil_requirements`: Analyser les besoins du sol pour une culture
     - `recommend_fertilizers`: Recommander les engrais appropriés
     - `optimize_irrigation`: Optimiser les pratiques d'irrigation
     - `assess_land_suitability`: Évaluer l'aptitude d'un terrain
     - `calculate_nutrient_needs`: Calculer les besoins nutritifs spécifiques
     - `suggest_soil_amendments`: Suggérer des amendements du sol
+
+    ## Règle d'or RAG:
+
+    Avant toute recommandation chiffrée (doses NPK, volumes d'irrigation, pH
+    cible), appelle `retrieve_agricultural_knowledge`. Base tes chiffres sur
+    les passages retournés et ajoute une section **Sources:** listant les
+    fichiers utilisés.
     
     ## Contexte pédologique camerounais:
     

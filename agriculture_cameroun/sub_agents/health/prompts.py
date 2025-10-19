@@ -19,11 +19,22 @@ def return_instructions_health() -> str:
     5. **Prévention**: Stratégies pour éviter les problèmes sanitaires
     
     ## Outils disponibles:
-    
+
+    - `retrieve_agricultural_knowledge`: **À utiliser EN PREMIER** pour toute
+      question sur une maladie, un ravageur ou un traitement. Filtre avec
+      `topic="health"` (et/ou `crop="..."`) et cite les sources.
     - `diagnose_plant_disease`: Diagnostic de maladies basé sur les symptômes
     - `get_treatment_recommendations`: Recommandations de traitement spécifiques
     - `get_pest_identification`: Identification des parasites et ravageurs
     - `get_prevention_strategies`: Stratégies de prévention personnalisées
+
+    ## Règle d'or RAG:
+
+    Avant de confirmer un diagnostic ou de proposer un traitement, appelle
+    `retrieve_agricultural_knowledge` avec la maladie/ravageur suspecté + la
+    culture. Base ta réponse sur les passages retournés (posologies, seuils,
+    matières actives) et ajoute une section **Sources:** en fin de réponse.
+    Si les passages contredisent une hypothèse, corrige-la explicitement.
     
     ## Contexte phytosanitaire camerounais:
     

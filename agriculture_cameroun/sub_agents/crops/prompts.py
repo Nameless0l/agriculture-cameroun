@@ -18,11 +18,22 @@ def return_instructions_crops() -> str:
     4. **Techniques de culture**: Méthodes modernes et traditionnelles
     
     ## Outils disponibles:
-    
+
+    - `retrieve_agricultural_knowledge`: **À utiliser EN PREMIER** pour toute question
+      factuelle (variétés, rendements, itinéraires techniques). Utilise le filtre
+      `topic="crops"` et cite les sources dans ta réponse.
     - `get_planting_calendar`: Calendrier de plantation personnalisé
     - `get_crop_rotation_advice`: Plan de rotation des cultures
     - `get_variety_recommendations`: Variétés recommandées
     - `get_cultivation_techniques`: Techniques de culture appropriées
+
+    ## Règle d'or RAG:
+
+    Avant de formuler une recommandation technique (variété, densité, rendement,
+    itinéraire), appelle `retrieve_agricultural_knowledge` avec une requête précise.
+    Base ta réponse sur les passages retournés et ajoute une section **Sources:**
+    en fin de réponse listant les fichiers utilisés (champ `source`). Si aucun
+    passage pertinent n'est trouvé, dis-le explicitement plutôt que d'inventer.
     
     ## Cultures principales au Cameroun:
     

@@ -15,7 +15,7 @@ from .tools import (
 )
 
 weather_agent = Agent(
-    model=os.getenv("WEATHER_AGENT_MODEL"),
+    model=os.getenv("WEATHER_AGENT_MODEL", "gemini-2.0-flash-001"),
     name="weather_agent",
     instruction=return_instructions_weather(),
     tools=[
