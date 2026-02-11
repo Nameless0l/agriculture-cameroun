@@ -1,0 +1,736 @@
+manifest:
+  version: "0.1.3"
+  schema: https://a2as.org/cert/schema
+  subject:
+    name: nameless0l/agriculture-cameroun
+    source: https://github.com/nameless0l/agriculture-cameroun
+    branch: main
+    commit: "668bbbed"
+    scope: [agriculture_cameroun/agent.py, agriculture_cameroun/config.py, agriculture_cameroun/prompts.py, agriculture_cameroun/sub_agents/__init__.py,
+      agriculture_cameroun/sub_agents/crops/agent.py, agriculture_cameroun/sub_agents/crops/prompts.py, agriculture_cameroun/sub_agents/crops/tools.py,
+      agriculture_cameroun/sub_agents/economic/agent.py, agriculture_cameroun/sub_agents/economic/prompts.py, agriculture_cameroun/sub_agents/economic/tools.py,
+      agriculture_cameroun/sub_agents/health/agent.py, agriculture_cameroun/sub_agents/health/prompts.py, agriculture_cameroun/sub_agents/health/tools.py,
+      agriculture_cameroun/sub_agents/resources/agent.py, agriculture_cameroun/sub_agents/resources/prompts.py, agriculture_cameroun/sub_agents/resources/tools.py,
+      agriculture_cameroun/sub_agents/weather/agent.py, agriculture_cameroun/sub_agents/weather/prompts.py, agriculture_cameroun/sub_agents/weather/tools.py,
+      agriculture_cameroun/tools.py, agriculture_cameroun/utils/data.py]
+  issued:
+    by: A2AS.org
+    at: '2026-02-11T16:53:34Z'
+    url: https://a2as.org/certified/agents/nameless0l/agriculture-cameroun
+  signatures:
+    digest: sha256:M3mSZiRiXUGBVlwkdE0kLWElygcvJZLGXW1tBvTGAWY
+    key: ed25519:QEbgUqP-Q_h1H65iY7-9HeJ1F1bJrN6cTTZgIfG8UXc
+    sig: ed25519:6OXQKZqWKhtYD2CnB5eFG-HH8NEpZCV0TSa2RL53W_ycTlm2uOe8vNZa1OT76q5vmYI1BQk9kaDoE7cWJsIZCw
+
+agents:
+  crops_agent:
+    type: instance
+    models: [CROPS_AGENT_MODEL]
+    tools: [get_planting_calendar, get_crop_rotation_advice, get_variety_recommendations, get_cultivation_techniques]
+    params:
+      name: crops_agent
+      instruction: return_instructions_crops()
+      generate_content_config:
+        class: GenerateContentConfig
+        temperature: "0.6"
+  economic_agent:
+    type: instance
+    models: [gemini-2.0-flash-001]
+    tools: [get_market_prices, analyze_profitability, get_market_trends, recommend_sales_strategy, calculate_production_costs,
+      analyze_market_opportunities]
+    params:
+      name: economic_agent
+      instruction: return_instructions_economic()
+      generate_content_config:
+        class: GenerateContentConfig
+        temperature: "0.3"
+  health_agent:
+    type: instance
+    models: [HEALTH_AGENT_MODEL]
+    tools: [diagnose_plant_disease, get_treatment_recommendations, get_pest_identification, get_prevention_strategies]
+    params:
+      name: health_agent
+      instruction: return_instructions_health()
+      generate_content_config:
+        class: GenerateContentConfig
+        temperature: "0.5"
+  resources_agent:
+    type: instance
+    models: [gemini-2.0-flash-001]
+    tools: [analyze_soil_requirements, recommend_fertilizers, optimize_irrigation, assess_land_suitability, calculate_nutrient_needs,
+      suggest_soil_amendments]
+    params:
+      name: resources_agent
+      instruction: return_instructions_resources()
+      generate_content_config:
+        class: GenerateContentConfig
+        temperature: "0.4"
+  root_agent:
+    type: instance
+    models: [ROOT_AGENT_MODEL]
+    tools: [call_weather_agent, call_crops_agent, call_health_agent, call_economic_agent, call_resources_agent, load_artifacts]
+    params:
+      name: agriculture_multiagent
+      instruction: return_instructions_root()
+      global_instruction: [Tu es un Système Multi-Agents pour l'Agriculture Camerounaise., 'Date actuelle: {date_today}',
+        'Langue: Français']
+      before_agent_callback: setup_before_agent_call
+      generate_content_config:
+        class: GenerateContentConfig
+        temperature: "0.7"
+      sub_agents: [weather_agent, crops_agent, health_agent, economic_agent, resources_agent]
+  weather_agent:
+    type: instance
+    models: [WEATHER_AGENT_MODEL]
+    tools: [get_weather_forecast, get_irrigation_advice, get_climate_alerts, analyze_rainfall_patterns]
+    params:
+      name: weather_agent
+      instruction: return_instructions_weather()
+      generate_content_config:
+        class: GenerateContentConfig
+        temperature: "0.5"
+
+models:
+  CROPS_AGENT_MODEL:
+    type: literal
+    agents: [crops_agent]
+  gemini-2.0-flash-001:
+    type: literal
+    agents: [resources_agent, economic_agent]
+  HEALTH_AGENT_MODEL:
+    type: literal
+    agents: [health_agent]
+  ROOT_AGENT_MODEL:
+    type: literal
+    agents: [root_agent]
+  WEATHER_AGENT_MODEL:
+    type: literal
+    agents: [weather_agent]
+
+tools:
+  agent_tool:
+    type: agent
+    agents: [weather_agent]
+    params:
+      wrapper: AgentTool
+      agent: weather_agent
+  agent_tool.1:
+    type: agent
+    agents: [crops_agent]
+    params:
+      wrapper: AgentTool
+      agent: crops_agent
+  agent_tool.2:
+    type: agent
+    agents: [health_agent]
+    params:
+      wrapper: AgentTool
+      agent: health_agent
+  agent_tool.3:
+    type: agent
+    agents: [economic_agent]
+    params:
+      wrapper: AgentTool
+      agent: economic_agent
+  agent_tool.4:
+    type: agent
+    agents: [resources_agent]
+    params:
+      wrapper: AgentTool
+      agent: resources_agent
+  analyze_market_opportunities:
+    type: function
+    agents: [economic_agent]
+    params:
+      description: "Identifie les opportunités de marché.\n\nArgs:\n    region: Région d'intérêt (optionnel)\n    investment_budget:\
+        \ Budget d'investissement disponible (optionnel)\n    tool_context: Contexte de l'outil\n    \nReturns:\n    Analyse\
+        \ des opportunités de marché"
+  analyze_profitability:
+    type: function
+    agents: [economic_agent]
+    params:
+      description: "Analyse la rentabilité d'une culture.\n\nArgs:\n    crop: Type de culture\n    area_hectares: Superficie\
+        \ en hectares\n    production_system: Système de production (traditionnel, amélioré, intensif)\n    tool_context:\
+        \ Contexte de l'outil\n    \nReturns:\n    Analyse de rentabilité détaillée"
+  analyze_rainfall_patterns:
+    type: function
+    agents: [weather_agent]
+    params:
+      description: "Analyse les tendances pluviométriques d'une région.\n\nArgs:\n    region: Nom de la région\n    period_months:\
+        \ Période d'analyse en mois\n    tool_context: Contexte de l'outil\n    \nReturns:\n    Analyse des précipitations"
+  analyze_soil_requirements:
+    type: function
+    agents: [resources_agent]
+    params:
+      description: "Analyse les exigences du sol pour une culture donnée.\n\nArgs:\n    crop: Type de culture\n    region:\
+        \ Région de culture\n    soil_type: Type de sol (optionnel)\n    current_ph: pH actuel du sol (optionnel)\n    tool_context:\
+        \ Contexte de l'outil\n    \nReturns:\n    Analyse complète des exigences du sol"
+  assess_land_suitability:
+    type: function
+    agents: [resources_agent]
+    params:
+      description: "Évalue l'aptitude d'un terrain pour une culture.\n\nArgs:\n    crop: Culture envisagée\n    region: Région\
+        \ du terrain\n    terrain_characteristics: Caractéristiques du terrain (pente, drainage, etc.)\n    tool_context:\
+        \ Contexte de l'outil\n    \nReturns:\n    Évaluation complète de l'aptitude du terrain"
+  calculate_nutrient_needs:
+    type: function
+    agents: [resources_agent]
+    params:
+      description: "Calcule les besoins nutritifs précis d'une culture.\n\nArgs:\n    crop: Type de culture\n    target_yield:\
+        \ Rendement cible (kg/ha ou tonnes/ha)\n    soil_analysis: Résultats d'analyse de sol (optionnel)\n    tool_context:\
+        \ Contexte de l'outil\n    \nReturns:\n    Calcul détaillé des besoins nutritifs"
+  calculate_production_costs:
+    type: function
+    agents: [economic_agent]
+    params:
+      description: "Calcule les coûts de production détaillés.\n\nArgs:\n    crop: Type de culture\n    area_hectares: Superficie\
+        \ en hectares\n    input_level: Niveau d'intrants (minimal, standard, intensif)\n    tool_context: Contexte de l'outil\n\
+        \    \nReturns:\n    Analyse détaillée des coûts de production"
+  call_crops_agent:
+    type: function
+    agents: [root_agent]
+    params:
+      description: |-
+        Appelle l'agent cultures pour les questions de plantation et récolte.
+
+        Args:
+            question: Question sur les cultures
+            crop: Culture spécifique (optionnel)
+            region: Région spécifique (optionnel)
+            tool_context: Contexte de l'outil
+
+        Returns:
+            Réponse de l'agent cultures
+  call_economic_agent:
+    type: function
+    agents: [root_agent]
+    params:
+      description: |-
+        Appelle l'agent économique pour analyses de marché et rentabilité.
+
+        Args:
+            question: Question économique
+            crop: Culture concernée (optionnel)
+            quantity: Quantité en kg (optionnel)
+            tool_context: Contexte de l'outil
+
+        Returns:
+            Réponse de l'agent économique
+  call_health_agent:
+    type: function
+    agents: [root_agent]
+    params:
+      description: |-
+        Appelle l'agent santé des plantes pour diagnostics et traitements.
+
+        Args:
+            question: Question sur la santé des plantes
+            symptoms: Description des symptômes (optionnel)
+            crop: Culture affectée (optionnel)
+            tool_context: Contexte de l'outil
+
+        Returns:
+            Réponse de l'agent santé
+  call_resources_agent:
+    type: function
+    agents: [root_agent]
+    params:
+      description: |-
+        Appelle l'agent ressources pour gestion sol, eau et engrais.
+
+        Args:
+            question: Question sur les ressources
+            resource_type: Type de ressource (sol, eau, engrais)
+            crop: Culture concernée (optionnel)
+            tool_context: Contexte de l'outil
+
+        Returns:
+            Réponse de l'agent ressources
+  call_weather_agent:
+    type: function
+    agents: [root_agent]
+    params:
+      description: |-
+        Appelle l'agent météo pour les questions climatiques.
+
+        Args:
+            question: Question sur la météo ou le climat
+            region: Région spécifique (optionnel)
+            tool_context: Contexte de l'outil
+
+        Returns:
+            Réponse de l'agent météo
+  diagnose_plant_disease:
+    type: function
+    agents: [health_agent]
+    params:
+      description: "Diagnostique une maladie des plantes basée sur les symptômes.\n\nArgs:\n    crop: Type de culture affectée\n\
+        \    symptoms: Liste des symptômes observés\n    affected_parts: Parties de la plante affectées (optionnel)\n    environmental_conditions:\
+        \ Conditions environnementales (optionnel)\n    tool_context: Contexte de l'outil\n    \nReturns:\n    Diagnostic\
+        \ détaillé avec probabilités"
+  get_climate_alerts:
+    type: function
+    agents: [weather_agent]
+    params:
+      description: "Vérifie les alertes climatiques pour une région.\n\nArgs:\n    region: Nom de la région\n    tool_context:\
+        \ Contexte de l'outil\n    \nReturns:\n    Alertes météo actives"
+  get_crop_rotation_advice:
+    type: function
+    agents: [crops_agent]
+    params:
+      description: "Recommande un plan de rotation des cultures.\n\nArgs:\n    current_crop: Culture actuelle\n    soil_type:\
+        \ Type de sol\n    field_history: Historique des cultures (optionnel)\n    tool_context: Contexte de l'outil\n   \
+        \ \nReturns:\n    Plan de rotation recommandé"
+  get_cultivation_techniques:
+    type: function
+    agents: [crops_agent]
+    params:
+      description: "Fournit des techniques de culture adaptées.\n\nArgs:\n    crop: Type de culture\n    farming_system: Système\
+        \ agricole (traditionnel, moderne, mixte)\n    constraints: Contraintes (budget, main d'œuvre, équipement)\n    tool_context:\
+        \ Contexte de l'outil\n    \nReturns:\n    Techniques de culture recommandées"
+  get_irrigation_advice:
+    type: function
+    agents: [weather_agent]
+    params:
+      description: "Fournit des conseils d'irrigation personnalisés.\n\nArgs:\n    crop: Type de culture\n    soil_type: Type\
+        \ de sol\n    current_conditions: Conditions météo actuelles\n    tool_context: Contexte de l'outil\n    \nReturns:\n\
+        \    Conseils d'irrigation détaillés"
+  get_market_prices:
+    type: function
+    agents: [economic_agent]
+    params:
+      description: "Obtient les prix actuels du marché pour une culture.\n\nArgs:\n    crop: Type de culture\n    region:\
+        \ Région (optionnel)\n    market_type: Type de marché (gros, détail, export)\n    tool_context: Contexte de l'outil\n\
+        \    \nReturns:\n    Prix du marché avec tendances"
+  get_market_trends:
+    type: function
+    agents: [economic_agent]
+    params:
+      description: "Analyse les tendances du marché.\n\nArgs:\n    crop: Culture spécifique (optionnel)\n    period_months:\
+        \ Période d'analyse en mois\n    tool_context: Contexte de l'outil\n    \nReturns:\n    Analyse des tendances du marché"
+  get_pest_identification:
+    type: function
+    agents: [health_agent]
+    params:
+      description: "Identifie les parasites et ravageurs.\n\nArgs:\n    crop: Culture affectée\n    pest_description: Description\
+        \ du parasite observé\n    damage_type: Type de dégâts observés\n    location_on_plant: Localisation sur la plante\n\
+        \    tool_context: Contexte de l'outil\n    \nReturns:\n    Identification du parasite avec informations détaillées"
+  get_planting_calendar:
+    type: function
+    agents: [crops_agent]
+    params:
+      description: "Génère un calendrier de plantation détaillé.\n\nArgs:\n    crop: Type de culture\n    region: Région du\
+        \ Cameroun\n    tool_context: Contexte de l'outil\n    \nReturns:\n    Calendrier de plantation avec dates et activités"
+  get_prevention_strategies:
+    type: function
+    agents: [health_agent]
+    params:
+      description: "Fournit des stratégies de prévention personnalisées.\n\nArgs:\n    crop: Culture à protéger\n    region:\
+        \ Région de culture\n    main_threats: Menaces principales identifiées\n    farming_system: Système de culture\n \
+        \   tool_context: Contexte de l'outil\n    \nReturns:\n    Stratégies de prévention complètes"
+  get_treatment_recommendations:
+    type: function
+    agents: [health_agent]
+    params:
+      description: "Fournit des recommandations de traitement spécifiques.\n\nArgs:\n    diagnosis: Diagnostic de la maladie/parasite\n\
+        \    crop: Culture affectée\n    severity: Gravité du problème\n    budget_constraints: Contraintes budgétaires\n\
+        \    tool_context: Contexte de l'outil\n    \nReturns:\n    Plan de traitement détaillé"
+  get_variety_recommendations:
+    type: function
+    agents: [crops_agent]
+    params:
+      description: "Recommande les meilleures variétés pour une culture.\n\nArgs:\n    crop: Type de culture\n    region:\
+        \ Région du Cameroun\n    priorities: Priorités (rendement, résistance, précocité)\n    tool_context: Contexte de\
+        \ l'outil\n    \nReturns:\n    Variétés recommandées avec caractéristiques"
+  get_weather_forecast:
+    type: function
+    agents: [weather_agent]
+    params:
+      description: "Obtient les prévisions météo pour une région.\n\nArgs:\n    region: Nom de la région\n    days: Nombre\
+        \ de jours de prévision (max 14)\n    tool_context: Contexte de l'outil\n    \nReturns:\n    Prévisions météorologiques\
+        \ détaillées"
+  load_artifacts:
+    type: module
+    agents: [root_agent]
+  optimize_irrigation:
+    type: function
+    agents: [resources_agent]
+    params:
+      description: "Optimise la gestion de l'irrigation.\n\nArgs:\n    crop: Type de culture\n    region: Région de culture\n\
+        \    area_hectares: Superficie à irriguer\n    water_source: Source d'eau disponible\n    tool_context: Contexte de\
+        \ l'outil\n    \nReturns:\n    Plan d'irrigation optimisé"
+  recommend_fertilizers:
+    type: function
+    agents: [resources_agent]
+    params:
+      description: "Recommande un plan de fertilisation adapté.\n\nArgs:\n    crop: Type de culture\n    area_hectares: Superficie\
+        \ à fertiliser\n    soil_fertility: Niveau de fertilité du sol\n    budget_level: Niveau de budget disponible\n  \
+        \  tool_context: Contexte de l'outil\n    \nReturns:\n    Plan de fertilisation détaillé"
+  recommend_sales_strategy:
+    type: function
+    agents: [economic_agent]
+    params:
+      description: "Recommande une stratégie de vente optimale.\n\nArgs:\n    crop: Type de culture\n    quantity_kg: Quantité\
+        \ à vendre en kg\n    urgency: Urgence de vente (urgent, normal, patient)\n    tool_context: Contexte de l'outil\n\
+        \    \nReturns:\n    Stratégie de vente recommandée"
+  suggest_soil_amendments:
+    type: function
+    agents: [resources_agent]
+    params:
+      description: "Suggère des amendements du sol appropriés.\n\nArgs:\n    soil_ph: pH actuel du sol\n    organic_matter:\
+        \ Taux de matière organique (%)\n    main_constraints: Principales contraintes du sol\n    budget_fcfa: Budget disponible\
+        \ (optionnel)\n    tool_context: Contexte de l'outil\n    \nReturns:\n    Plan d'amendement du sol"
+
+teams:
+  root_agent:
+    type: hierarchy
+    agents: [root_agent, weather_agent, crops_agent, health_agent, economic_agent, resources_agent]
+
+imports:
+  Agent: google.adk.agents.Agent
+  agent: agent
+  AgentTool: google.adk.tools.agent_tool.AgentTool
+  AGRICULTURAL_TOOLS: utils.data.AGRICULTURAL_TOOLS
+  analyze_market_opportunities: tools.analyze_market_opportunities
+  analyze_profitability: tools.analyze_profitability
+  analyze_rainfall_patterns: tools.analyze_rainfall_patterns
+  analyze_soil_requirements: tools.analyze_soil_requirements
+  Any: typing.Any
+  assess_land_suitability: tools.assess_land_suitability
+  BaseModel: pydantic.BaseModel
+  calculate_nutrient_needs: tools.calculate_nutrient_needs
+  calculate_production_costs: tools.calculate_production_costs
+  call_crops_agent: tools.call_crops_agent
+  call_economic_agent: tools.call_economic_agent
+  call_health_agent: tools.call_health_agent
+  call_resources_agent: tools.call_resources_agent
+  call_weather_agent: tools.call_weather_agent
+  CallbackContext: google.adk.agents.callback_context.CallbackContext
+  COMMON_DISEASES: utils.data.COMMON_DISEASES
+  ConfigDict: pydantic.ConfigDict
+  CropInfo: agriculture_cameroun.config.CropInfo
+  CROPS: utils.data.CROPS
+  crops_agent: crops.agent.crops_agent
+  CropType: agriculture_cameroun.config.CropType
+  date: datetime.date
+  datetime: datetime.datetime
+  diagnose_plant_disease: tools.diagnose_plant_disease
+  Dict: typing.Dict
+  economic_agent: economic.agent.economic_agent
+  Enum: enum.Enum
+  Field: pydantic.Field
+  field_validator: pydantic.field_validator
+  genai: google.generativeai
+  get_climate_alerts: tools.get_climate_alerts
+  get_config: agriculture_cameroun.config.get_config
+  get_crop_info: utils.data.get_crop_info
+  get_crop_rotation_advice: tools.get_crop_rotation_advice
+  get_cultivation_techniques: tools.get_cultivation_techniques
+  get_irrigation_advice: tools.get_irrigation_advice
+  get_market_prices: tools.get_market_prices
+  get_market_trends: tools.get_market_trends
+  get_pest_identification: tools.get_pest_identification
+  get_planting_calendar: tools.get_planting_calendar
+  get_prevention_strategies: tools.get_prevention_strategies
+  get_region_info: utils.data.get_region_info
+  get_treatment_recommendations: tools.get_treatment_recommendations
+  get_variety_recommendations: tools.get_variety_recommendations
+  get_weather_forecast: tools.get_weather_forecast
+  health_agent: health.agent.health_agent
+  List: typing.List
+  load_artifacts: google.adk.tools.load_artifacts
+  LOCAL_FERTILIZERS: utils.data.LOCAL_FERTILIZERS
+  MARKET_PRICES: utils.data.MARKET_PRICES
+  optimize_irrigation: tools.optimize_irrigation
+  Optional: typing.Optional
+  os: os
+  random: random
+  recommend_fertilizers: tools.recommend_fertilizers
+  recommend_sales_strategy: tools.recommend_sales_strategy
+  REGIONS: utils.data.REGIONS
+  RegionType: agriculture_cameroun.config.RegionType
+  resources_agent: resources.agent.resources_agent
+  return_instructions_crops: prompts.return_instructions_crops
+  return_instructions_economic: prompts.return_instructions_economic
+  return_instructions_health: prompts.return_instructions_health
+  return_instructions_resources: prompts.return_instructions_resources
+  return_instructions_root: prompts.return_instructions_root
+  return_instructions_weather: prompts.return_instructions_weather
+  SEASONS: utils.data.SEASONS
+  SeasonType: agriculture_cameroun.config.SeasonType
+  SoilType: agriculture_cameroun.config.SoilType
+  suggest_soil_amendments: tools.suggest_soil_amendments
+  timedelta: datetime.timedelta
+  ToolContext: google.adk.tools.ToolContext
+  types: google.genai.types
+  weather_agent: weather.agent.weather_agent
+
+functions:
+  analyze_market_opportunities:
+    type: sync
+    module: agriculture_cameroun.sub_agents.economic.tools
+    args: [tool_context, region, investment_budget]
+    params:
+      returns: Dict
+  analyze_profitability:
+    type: sync
+    module: agriculture_cameroun.sub_agents.economic.tools
+    args: [crop, area_hectares, tool_context, production_system]
+    params:
+      returns: Dict
+  analyze_rainfall_patterns:
+    type: sync
+    module: agriculture_cameroun.sub_agents.weather.tools
+    args: [region, tool_context, period_months]
+    params:
+      returns: Dict
+  analyze_soil_requirements:
+    type: sync
+    module: agriculture_cameroun.sub_agents.resources.tools
+    args: [crop, region, tool_context, soil_type, current_ph]
+    params:
+      returns: Dict
+  assess_land_suitability:
+    type: sync
+    module: agriculture_cameroun.sub_agents.resources.tools
+    args: [crop, region, terrain_characteristics, tool_context]
+    params:
+      returns: Dict
+  calculate_nutrient_needs:
+    type: sync
+    module: agriculture_cameroun.sub_agents.resources.tools
+    args: [crop, target_yield, tool_context, soil_analysis]
+    params:
+      returns: Dict
+  calculate_production_costs:
+    type: sync
+    module: agriculture_cameroun.sub_agents.economic.tools
+    args: [crop, area_hectares, tool_context, input_level]
+    params:
+      returns: Dict
+  call_crops_agent:
+    type: async
+    module: agriculture_cameroun.tools
+    args: [question, tool_context, crop, region]
+  call_economic_agent:
+    type: async
+    module: agriculture_cameroun.tools
+    args: [question, tool_context, crop, quantity]
+  call_health_agent:
+    type: async
+    module: agriculture_cameroun.tools
+    args: [question, tool_context, symptoms, crop]
+  call_resources_agent:
+    type: async
+    module: agriculture_cameroun.tools
+    args: [question, tool_context, resource_type, crop]
+  call_weather_agent:
+    type: async
+    module: agriculture_cameroun.tools
+    args: [question, tool_context, region]
+  diagnose_plant_disease:
+    type: sync
+    module: agriculture_cameroun.sub_agents.health.tools
+    args: [crop, symptoms, tool_context, affected_parts, environmental_conditions]
+    params:
+      returns: Dict
+  get_climate_alerts:
+    type: sync
+    module: agriculture_cameroun.sub_agents.weather.tools
+    args: [region, tool_context]
+    params:
+      returns: Dict
+  get_config:
+    type: sync
+    module: agriculture_cameroun.config
+    params:
+      returns: AgricultureConfig
+  get_crop_info:
+    type: sync
+    module: agriculture_cameroun.utils.data
+    args: [crop]
+    params:
+      returns: CropInfo
+  get_crop_rotation_advice:
+    type: sync
+    module: agriculture_cameroun.sub_agents.crops.tools
+    args: [current_crop, soil_type, tool_context, field_history]
+    params:
+      returns: Dict
+  get_cultivation_techniques:
+    type: sync
+    module: agriculture_cameroun.sub_agents.crops.tools
+    args: [crop, tool_context, farming_system, constraints]
+    params:
+      returns: Dict
+  get_irrigation_advice:
+    type: sync
+    module: agriculture_cameroun.sub_agents.weather.tools
+    args: [crop, soil_type, current_conditions, tool_context]
+    params:
+      returns: str
+  get_market_price_range:
+    type: sync
+    module: agriculture_cameroun.utils.data
+    args: [crop]
+    params:
+      returns: Dict
+  get_market_prices:
+    type: sync
+    module: agriculture_cameroun.sub_agents.economic.tools
+    args: [crop, tool_context, market_type, region]
+    params:
+      returns: Dict
+  get_market_trends:
+    type: sync
+    module: agriculture_cameroun.sub_agents.economic.tools
+    args: [tool_context, crop, period_months]
+    params:
+      returns: Dict
+  get_pest_identification:
+    type: sync
+    module: agriculture_cameroun.sub_agents.health.tools
+    args: [crop, pest_description, tool_context, damage_type, location_on_plant]
+    params:
+      returns: Dict
+  get_planting_calendar:
+    type: sync
+    module: agriculture_cameroun.sub_agents.crops.tools
+    args: [crop, region, tool_context]
+    params:
+      returns: Dict
+  get_prevention_strategies:
+    type: sync
+    module: agriculture_cameroun.sub_agents.health.tools
+    args: [crop, tool_context, region, main_threats, farming_system]
+    params:
+      returns: Dict
+  get_region_info:
+    type: sync
+    module: agriculture_cameroun.utils.data
+    args: [region]
+    params:
+      returns: Dict
+  get_seasonal_activities:
+    type: sync
+    module: agriculture_cameroun.utils.data
+    args: [region, month]
+    params:
+      returns: List[str]
+  get_suitable_crops:
+    type: sync
+    module: agriculture_cameroun.utils.data
+    args: [region]
+    params:
+      returns: List[CropType]
+  get_treatment_recommendations:
+    type: sync
+    module: agriculture_cameroun.sub_agents.health.tools
+    args: [diagnosis, crop, tool_context, severity, budget_constraints]
+    params:
+      returns: Dict
+  get_variety_recommendations:
+    type: sync
+    module: agriculture_cameroun.sub_agents.crops.tools
+    args: [crop, region, tool_context, priorities]
+    params:
+      returns: Dict
+  get_weather_forecast:
+    type: sync
+    module: agriculture_cameroun.sub_agents.weather.tools
+    args: [region, tool_context, days]
+    params:
+      returns: Dict
+  optimize_irrigation:
+    type: sync
+    module: agriculture_cameroun.sub_agents.resources.tools
+    args: [crop, region, area_hectares, tool_context, water_source]
+    params:
+      returns: Dict
+  recommend_fertilizers:
+    type: sync
+    module: agriculture_cameroun.sub_agents.resources.tools
+    args: [crop, area_hectares, tool_context, soil_fertility, budget_level]
+    params:
+      returns: Dict
+  recommend_sales_strategy:
+    type: sync
+    module: agriculture_cameroun.sub_agents.economic.tools
+    args: [crop, quantity_kg, tool_context, urgency]
+    params:
+      returns: Dict
+  return_instructions_crops:
+    type: sync
+    module: agriculture_cameroun.sub_agents.crops.prompts
+    params:
+      returns: str
+  return_instructions_economic:
+    type: sync
+    module: agriculture_cameroun.sub_agents.economic.prompts
+    params:
+      returns: str
+  return_instructions_health:
+    type: sync
+    module: agriculture_cameroun.sub_agents.health.prompts
+    params:
+      returns: str
+  return_instructions_resources:
+    type: sync
+    module: agriculture_cameroun.sub_agents.resources.prompts
+    params:
+      returns: str
+  return_instructions_root:
+    type: sync
+    module: agriculture_cameroun.prompts
+    params:
+      returns: str
+  return_instructions_weather:
+    type: sync
+    module: agriculture_cameroun.sub_agents.weather.prompts
+    params:
+      returns: str
+  setup_before_agent_call:
+    type: sync
+    module: agriculture_cameroun.agent
+    args: [callback_context]
+  suggest_soil_amendments:
+    type: sync
+    module: agriculture_cameroun.sub_agents.resources.tools
+    args: [soil_ph, organic_matter, main_constraints, tool_context, budget_fcfa]
+    params:
+      returns: Dict
+  update_config:
+    type: sync
+    module: agriculture_cameroun.config
+    params:
+      returns: None
+  validate_api_key:
+    type: sync
+    module: agriculture_cameroun.config
+    args: [cls, v]
+  validate_environment:
+    type: sync
+    module: agriculture_cameroun.config
+
+variables:
+  DEFAULT_LANGUAGE:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [agriculture_cameroun.agent]
+  DEFAULT_REGION:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [agriculture_cameroun.agent]
+  GEMINI_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv, genai.configure]
+      path: [agriculture_cameroun.config, agriculture_cameroun.sub_agents.crops.tools, agriculture_cameroun.sub_agents.weather.tools,
+        agriculture_cameroun.sub_agents.resources.tools, agriculture_cameroun.sub_agents.economic.tools, agriculture_cameroun.sub_agents.health.tools]
+  var:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [agriculture_cameroun.config]
